@@ -1,0 +1,53 @@
+	EVIL TWIN ATTACKS
+
+ Aynı isimde yeni bir ağ yayıyoruz.
+ Orijinal ağdaki hedefe deauth uyguluyoruz.
+ Bizim yaydığımıza bağlanmasını bekliyoruz.
+ Hedefe moedem güncellemesi vb. bahanelerle şifreyi soruyoruz.
+ Araç: Airgeddon ve Fluxion
+
+
+
+
+	AIRGEDDON ÇALIŞTIRMAK
+cd /opt/
+cd airgeddon/
+./airgeddon.sh
+ Enter dedikten sonra gerekli araçlar yüklensin mi diye soracaktır
+ Eğer tool çalışmazsa bu araçları indirip girmeyi deneyebiliriz.
+2	-> wlan0
+2	-> Monitor moda geçiş yaptık.
+9	->
+23	-> Kendi modemimizi seçtik.
+2	-> Deauth aireplay attack
+N	-> Farklı kanallarda işlemler yapmak istiyor bu seçeneğe gerek yok.
+N	-> Mac adresi değiştirmek ister misiniz?
+N	-> Handshake dosyanız var mı? var ise konumunu direkt olarak araca verebiliyoruz.
+30	-> Time out verin (--deauth x) gönderilecek paket sayısı (30 ideal)
+	   İşlem tamamlandıktan sonra Handshake yakalanmış olacaktır. 
+	   Yakalamazsa tekrar dene yakalamazsa manuel olarak alabiliriz.
+Enter	-> İşlem bittiğinde bulunan parolayı "x" buraya yazdırayım mı?
+11	-> Türkçe (Kullanıcının göreceği "modem bozuldu şifre giriniz" yazısı vs.)
+
+
+ İşlem başladığında tüm ağa deauth saldırısı yapacak farklı bir cihazdan bağlandığınızda
+ şifre isteyecek şifre girildiğinde bu şifreyi handshake dosyası ile karşılaştıracak ve kullanıcıya doğru olup olmadığını söyleyecek.
+ Şifre girildikten sonra hacking işlemimiz tamamlanmış olacaktır.
+
+
+CTRL + C yaptıktan sonra Y diyerek çıkabiliriz. (Monitör modda kalmak istiyorsak sıradaki seçeneğe y dememiz yeterli olacaktır.)
+
+cd ..
+cd root/
+  evil_twin... yazan yer şeytani ikiz tarafından yakalanılan şifre.
+cat evil_twin...	-> Yazdıktan sonra tüm kullanıcı bilgilerimiz ekranda olacaktır.
+
+
+
+
+	AIRGEDDON SETTINGS
+cd /opt/
+cd airgeddon/
+ls -la
+nano language_strings.sh	-> Değiştirmek istediğimiz bir şey varsa bunları yapabiliriz.
+				-> İşlem bittikten sonra CTRL + O, Enter, Control X yaparak kaydetip kapatabiliriz.
