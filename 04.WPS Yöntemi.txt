@@ -1,4 +1,5 @@
 	WPS YÖNTEMİ
+	
  Neredeyse hiçbir modemde güvenliklerin arttırılması sebebiyle çalışmıyor.
  Bu yöntemi kullanmana gerek yoktur ve sadece bilgi amaçlı yazılmıştır.
 
