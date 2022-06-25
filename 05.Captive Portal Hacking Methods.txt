@@ -115,3 +115,5 @@ Start capturing packets
 
  Apply a display filter kısmına "http" yazıyoruz, POST Metodu kullanan yere girdiğimizde 
  Kullanıcının Captive Portal'a girdiği Kullanıcı adı ve Şifre bu kısımda gözükecektir.
+
+
