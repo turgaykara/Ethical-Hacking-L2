@@ -1,0 +1,57 @@
+	WPA ENTERPRISE
+
+  Genelde şirketlere kullanılan internete bağalanma yöntemine yapılan bir saldırı,
+  WPA ENTERPRISE, Normla WPA Şifrelemesinden daha karmaşık ve kırılması zor bir türdür.
+
+  WPA Enterprise ağı yaratıp o şirketin elemanlarını ağa bağlanmasını sağlayıp,
+  şifrelerini almaya çalışacağız.
+
+  Radius Sunucuya yapılan request ve response işlemlerinin de
+  wpa ile şifrelenmiş olması bize zorluk çıkartacaktır.
+
+  Şifreyi ele geçirdiğimizde bize encrypted şekilde gelecektir.
+  Bu yüzden bu dosyaya karşı wordlist çalıştırmamız gerekecektir.
+
+
+
+
+ 	WPA ENTERPRISE KURMAK
+apt-get install hostapd-wpe
+leafpad /etc/hostapd-wpe/hostapd-wpe.conf
+
+
+  Tüm ağa ya da o şirketin elemanlarına deauth saldırısı yaparak "version2" 
+  adı altında bizim yaratmış olduğumuz wpa-enterprise ağına bağlanmalarını sağlıyoruz.
+
+
+service NetworkManager stop
+hostapd-wpe /etc/hostapd-wpe/hostapd-wpe.conf	-> Enterprise yayını yapmaya başladık.
+ 
+
+  Bu aşamadan sonra Tüm ağa ya da o şirketin elemanlarına deauth saldırısı yaparak "version2" 
+  adı altında bizim yaratmış olduğumuz wpa-enterprise ağına bağlanmalarını sağlıyoruz.
+
+  Eleman version2 ağa bağlanmak için Kullanıcı adını ve Şifresini yazarak girdiğinde
+  Kullanıcı adını görebileceğiz ama girilen şifre decrpyted olarak gözükecektir.
+
+  CTRL + C yaparak yayını durdurabiliriz: saldırı yapılan eleman şüphelenmesin ve başkalarına söylemesin. :)
+
+  Bir wordlist yaratarak şifreli olarak aldığımız "challenge" ve "response"u birbirine karşı çalıştıracağız.
+
+
+crunch 8 8 xyz123 -o wordlist.company
+asleap -C  eb:e4:bf:bf:28:e4:bc:fd -R 46:e0:55:06:7b:b5:ec:0a:0e:03:99:c6:2c:cb:5b:a9:37:82:ed:a8:6c:5c:16:53 -W /root/wordlist.company
+ -C = Challenge		-R = Response	-W = Çalıştıracağımız wordlist
+
+
+  Daha kapsamlı ve büyük bir wordlist yaratarak denememiz gerekiyor.
+  Modemdeki kadar uzun sürmeyecek ve Şifreyi bulduğunda ağa tamamiyle erişimimiz olacaktır.
+
+
+
+
+	GÜVENLİ KULLANICILARA(ELEMANLARA) SAHİP OLMAK
+  -WPA Enterprise için kullanıcıları eğitmek.
+  -Geçerli ağ isimlerini organizasyonla paylaşmak.
+  -Modem şifrelerini web arayüzlerine girmemek.
+  -Sosyal Mühendislik saldırılarına karşı bilgilendirmek.
