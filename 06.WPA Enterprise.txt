@@ -40,7 +40,7 @@ hostapd-wpe /etc/hostapd-wpe/hostapd-wpe.conf	-> Enterprise yayını yapmaya ba�
 
 
 crunch 8 8 xyz123 -o wordlist.company
-asleap -C  eb:e4:bf:bf:28:e4:bc:fd -R 46:e0:55:06:7b:b5:ec:0a:0e:03:99:c6:2c:cb:5b:a9:37:82:ed:a8:6c:5c:16:53 -W /root/wordlist.company
+asleap -C xx:xx:xx:xx:xx:xx -R xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx -W /root/wordlist.company
  -C = Challenge		-R = Response	-W = Çalıştıracağımız wordlist
 
 
