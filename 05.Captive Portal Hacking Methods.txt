@@ -46,7 +46,7 @@
 
 
 service apache2 start
-192.168.2.246	-> adresine girdiğimizde klonlamış olduğumuz siteyi bize gösterecektir.
+X.X.X.X		-> adresine girdiğimizde klonlamış olduğumuz siteyi bize gösterecektir.
 		-> Herhangi bir sorun çıkarsa diye Kod yazabileceğimiz bir editör olan Geany'yi indirebiliriz.
 		    indirirken bir sorun çıkarsa apt-get update --fix-missing çalıştırdıktan sonra indirmemizi başlatabiliriz.
 		   .html dosyamızın üzerine Open with "geany" diyerek editörü açıyoruz.
